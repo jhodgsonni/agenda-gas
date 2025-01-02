@@ -1,5 +1,77 @@
 <script>
 
+    function crearTablaContactos()
+    {
+        let tabla = document.getElementById('tablaContactos');
+        if(tabla != null)tabla.remove();
 
+        google.script.run.withSuccessHandler
+        (
+            function(obj)
+            {
     
+                tabla = document.createElement('table');
+                tabla.id = 'tablaContactos';
+
+                let tablaheader = document.createElement('thead');
+                let tablabody = document.createElement('tbody');
+
+                for(let i = 0; i < obj.length; i++)
+                {
+                    let fila = document.createElement('tr');
+                    for(let j = 0; j < obj[i].length; j++)
+                    {
+                        let celda = document.createElement('td');
+                        celda.textContent = obj[i][j];
+                        fila.appendChild(celda);
+                    }
+                    if(i == 0)
+                    {
+                        tablaheader.appendChild(fila);
+                        tabla.appendChild(tablaheader);
+                    }
+                    else
+                    {
+                        tablabody.appendChild(fila);
+                    }
+                }
+                
+                //Este codigo de Array for Each es una buena practica, esta comentado y no esta activa
+                <!-- Array.from(obj).forEach((filaActual ,i)=> 
+                
+                {
+                    let fila = document.createElement('tr');
+                    filaActual.forEach(celdaActual => 
+                    {
+                        let celda = document.createElement('td');
+                        celda.textContent = celdaActual;
+                        fila.appendChild(celda);
+                    });
+                    if(i == 0)
+                    {
+                       
+                        tablaheader.appendChild(fila);
+                        tabla.appendChild(tablaheader);
+                    }
+                    else
+                    {
+                        tablabody.appendChild(fila);
+                    }
+                   
+                }); -->
+
+                //Agregamos clases a la cabecera
+                tablaheader.classList.add('table-dark');
+                //Agregamos el cuerpo a la tabla
+                tabla.appendChild(tablabody);
+                //Agregamos clases a la tabla
+                tabla.classList.add('table  table-striped', 'border', 'border-3', 'table-success');
+                //Agregamos tabla a la pagina
+                document.getElementById('divContactos').appendChild(tabla);
+            }
+
+        ).obtenerContactos();
+    }
+
+
 </script>
