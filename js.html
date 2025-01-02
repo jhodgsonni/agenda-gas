@@ -16,7 +16,19 @@
                 let tablaheader = document.createElement('thead');
                 let tablabody = document.createElement('tbody');
 
-                for(let i = 0; i < obj.length; i++)
+                //Header de la tabla
+                let primeraFila = document.createElement('tr');
+                for(let j = 0; j < obj[0].length; j++)
+                {
+                    let celda = document.createElement('td');
+                    celda.textContent = obj[0][j];
+                    primeraFila.appendChild(celda);
+                }
+                tablaheader.appendChild(primeraFila);
+                tabla.appendChild(tablaheader);
+
+                //Body de la tabla
+                for(let i = 1; i < obj.length; i++)
                 {
                     let fila = document.createElement('tr');
                     for(let j = 0; j < obj[i].length; j++)
@@ -25,15 +37,8 @@
                         celda.textContent = obj[i][j];
                         fila.appendChild(celda);
                     }
-                    if(i == 0)
-                    {
-                        tablaheader.appendChild(fila);
-                        tabla.appendChild(tablaheader);
-                    }
-                    else
-                    {
                         tablabody.appendChild(fila);
-                    }
+        
                 }
                 
                 //Este codigo de Array for Each es una buena practica, esta comentado y no esta activa
