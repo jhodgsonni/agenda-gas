@@ -19,7 +19,21 @@ function crearTablaContactos()
             let tablaHeader = document.createElement('thead');
             let tablaBody = document.createElement('tbody');
 
-            for(let i=0; i< obj.length; i++)
+            //Empezamos creando el header de la tabla
+            let primeraFila = document.createElement('tr');//creamos una fila
+
+            for(let i=0; i<obj[0].length; i++)//saca los elementos de la cabezera
+            {
+                let celda = document.createElement('td');//creamos una celda por cada elemento de la matriz de excel
+                    celda.textContent = obj[0][i];
+                    primeraFila.appendChild(celda);//agregamos la celda a la fila pero en la pagina web
+            }
+            //si es la primera fila, la agregamos a la cabecera
+            tablaHeader.appendChild(primeraFila);
+            tabla.appendChild(tablaHeader);
+
+            //Aqui empezamos a crear el cuerpo de la tabla
+            for(let i=1; i< obj.length; i++)
             {
                 let fila = document.createElement('tr');//creamos una fila
                 for(let j=0; j< obj[i].length; j++)
@@ -28,15 +42,7 @@ function crearTablaContactos()
                     celda.textContent = obj[i][j];
                     fila.appendChild(celda);//agregamos la celda a la fila pero en la pagina web
                 }
-                if(i==0)
-                {//si es la primera fila, la agregamos a la cabecera
-                    tablaHeader.appendChild(fila);
-                    tabla.appendChild(tablaHeader);
-                }
-                else
-                {
                     tablaBody.appendChild(fila);//agregamos la fila a la tabla pero en la pagina web
-                }
             }
 
             //Array.from(obj).forEach((filaActual,i) =>
