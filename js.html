@@ -4,22 +4,21 @@
     const NOTIFICACION_DANGER = 2;
     const NOTIFICACION_WARNING = 3;
 
-function crearTablaContactos()
-{
+    function crearTablaContactos()
+    {
     let tabla = document.getElementById('tablaContactos');//obtiene la tabla si ya existe
     if(tabla)
-    {
-        tabla.remove();//si existe la tabla la elimina, para que no se duplique
-    }
-    //Hace la tabla hasta que la funcion obtenerContactos termine
-    google.script.run.withSuccessHandler(crearTablaContactosCorrectamente).obtenerContactos()
-    .withfailureHandler(creatTablaContactosError)//En caso de no obtener los contactos, se va hasta la funcion creatTablaContactosError
-    .obtenerContactos();
-}  
-
-function crearTablaContactosCorrectamente(obj)//obj es el resultado de la funcion obtenerContactos
         {
-           
+            tabla.remove();//si existe la tabla la elimina, para que no se duplique
+        }
+        //Hace la tabla hasta que la funcion obtenerContactos termine
+        google.script.run.withSuccessHandler(crearTablaContactosCorrectamente).obtenerContactos()
+        .withfailureHandler(creatTablaContactosError)//En caso de no obtener los contactos, se va hasta la funcion creatTablaContactosError
+        .obtenerContactos();
+    }  
+
+    function crearTablaContactosCorrectamente(obj)//obj es el resultado de la funcion obtenerContactos
+        {
             //creamos la tabla
             tabla = document.createElement('table');
             tabla.id = 'tablaContactos';
@@ -62,60 +61,68 @@ function crearTablaContactosCorrectamente(obj)//obj es el resultado de la funcio
             //agrega,la tabla a la pagina
             document.getElementById('divContactos').appendChild(tabla);//divContactos es el id del div que esta en Main.html
         
-        //Mostrar una notificacion de exito
-        crearNotificacion('NOTIFICACION_OK', 'Se han cargado los contactos correctamente', 'Todo en orden');
+            //Mostrar una notificacion de exito
+            crearNotificacionOk('Se han cargado los contactos correctamente', 'Todo en orden');
         }
 
-        function creatTablaContactosError(error)
-        {
-            //Muestra una notificacion de error
-            crearNotificacion('NOTIFICACION_DANGER', 'No se han podido leer los contactos', 'ERROR');
-        }
-
-    function crearNotificacion(tipo, mensaje, titulo)
+    function creatTablaContactosError(error)
     {
-        //obtener datos de la notificacion
-        let mensajeNotificacion = document.getElementById('mensajeNotificacion');//lo mostrara en el div dentro del main linea 24
-        let tituloNotificacion = document.getElementById('tituloNotificacion');// lo mismo, linea 20 del main
-        let elementoNotificacion = document.getElementById('notificacion');//Esto nos guarda la notificacion en una variable, main linea 16
-        let iconoNotificacion = document.getElementById('iconoNotificacion');//Main linea 19
-        let notificacion = bootstrap.Toast.getOrCreateInstance(elementoNotificacion);//Esta instancia es para poder mostrarla
-        
-        //editar los datos de la notificacion
-        mensajeNotificacion.textContent = mensaje;
-        tituloNotificacion.textContent = titulo;
-
-        switch(tipo)
-        {
-            case NOTIFICACION_OK:
-            iconoNotificacion.className = ''; //limpia el icono
-            iconoNotificacion.classList.add('bi', 'bi-check2-square');//Este icono es de bootstrap
-            
-            elementoNotificacion.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-verde-oscuro');
-            //se le esta poniendo un color a la notificacion, el color depende del tipo de notificacion de css.html
-            break;
-
-            case NOTIFICACION_DANGER:
-            iconoNotificacion.className = ''; //limpia el icono
-            iconoNotificacion.classList.add('bi', 'bi-bug');//Este icono es de bootstrap
-            
-            elementoNotificacion.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-rojo-oscuro');
-            //se le esta poniendo un color a la notificacion, el color depende del tipo de notificacion de css.html
-            break;
-
-            case NOTIFICACION_WARNING:
-            iconoNotificacion.className = ''; //limpia el icono
-            iconoNotificacion.classList.add('bi', 'bi-exclamation-square');//Este icono es de bootstrap
-            
-            elementoNotificacion.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-amarillo-oscuro');
-            //se le esta poniendo un color a la notificacion, el color depende del tipo de notificacion de css.html
-            break;
-        }
-
-      
-
-        //Mostrar notificacion
-        notificacion.show();
-
+        //Muestra una notificacion de error
+        crearNotificacionError('No se han podido leer los contactos', 'ERROR');
     }
+
+    function crearNotificacion(mensaje, titulo)
+    {
+        document.getElementById('mensajeNotificacion').textContent = mensaje;
+        document.getElementById('tituloNotificacion').textContent = titulo;
+        let elementoNotificacion = document.getElementById('notificacion');//Esto nos guarda la notificacion en una variable, main linea 16
+        bootstrap.Toast.getOrCreateInstance(elementoNotificacion).show();//Esta instancia es para poder mostrarla
+    }
+
+    function crearNotificacionOk()
+    {
+        crearColorNotificacion(mensaje,titulo);
+        crearIconoNotificacionOk();
+        crearColorNotificacion('--color-verde-oscuro');
+    }
+
+    function crearNotificacionError()
+    {
+        crearColorNotificacion(mensaje,titulo);
+        crearIconoNotificacionError();
+        crearColorNotificacion('--color-rojo-oscuro');
+    }
+
+    function crearNotificacionWarning()
+    {
+        crearColorNotificacion(mensaje,titulo);
+        crearIconoNotificacionWarning();
+        crearColorNotificacion('--color-amarillo-oscuro');
+    }
+
+    function crearIconoNotificacionOk()
+    {
+        document.getElementById('iconoNotificacion').className = ''; //limpia el icono
+        document.getElementById('iconoNotificacion').classList.add('bi', 'bi-check2-square');//Este icono es de bootstrap
+    }
+
+    function crearIconoNotificacionError()
+    {
+        document.getElementById('iconoNotificacion').className = ''; //limpia el icono
+        document.getElementById('iconoNotificacion').classList.add('bi', 'bi-bug');//Este icono es de bootstrap
+    }
+
+    function crearIconoNotificacionWarning()
+    {
+        document.getElementById('iconoNotificacion').className = ''; //limpia el icono
+        document.getElementById('iconoNotificacion').classList.add('bi', 'bi-exclamation-square');//Este icono es de bootstrap
+    }
+
+    function crearColorNotificacion(color)
+    {
+        let elementoNotificacion = document.getElementById('notificacion');//Esto nos guarda la notificacion en una variable, main linea 16
+        elementoNotificacion.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-verde-oscuro');
+        //se le esta poniendo un color a la notificacion, el color depende del tipo de notificacion de css.html      
+    }
+
 </script>
