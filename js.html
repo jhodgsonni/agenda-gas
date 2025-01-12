@@ -1,5 +1,9 @@
 <script>
 
+    const NOTIFICACION_OK = 1;
+    const NOTIFICACION_DANGER = 2;
+    const NOTIFICACION_WARNING = 3;
+
 function crearTablaContactos()
 {
     let tabla = document.getElementById('tablaContactos');//obtiene la tabla si ya existe
@@ -49,31 +53,23 @@ function crearTablaContactosCorrectamente(obj)//obj es el resultado de la funcio
                     tablaBody.appendChild(fila);//agregamos la fila a la tabla pero en la pagina web
             }
 
-        
-            
             //agregamos clases a la cabecera
             tablaHeader.classList.add('table-dark');
             //agregamos el cuerpo de la tabla
             tabla.appendChild(tablaBody);
             //agregamos clases a la tabla
-            tabla.classList.add('table', 'table-striped', 'border', 'border-3');
+            tabla.classList.add('table', 'table-striped', 'border', 'border-4', 'border-dark');
             //agrega,la tabla a la pagina
             document.getElementById('divContactos').appendChild(tabla);//divContactos es el id del div que esta en Main.html
         
         //Mostrar una notificacion de exito
-        crearNotificacion('1', 'Se han cargado los contactos correctamente', 'Todo en orden');
+        crearNotificacion('NOTIFICACION_OK', 'Se han cargado los contactos correctamente', 'Todo en orden');
         }
 
         function creatTablaContactosError(error)
         {
             //Muestra una notificacion de error
-            let notificacion = document.getElementById('notificacion');
-            notificacion.classList.add('bg-danger');
-            document.getElementById('iconoNotificacion').classList.add('bi', 'bi-exclamation-triangle');
-            document.getElementById('tituloNotificacion').textContent = 'Error';
-            document.getElementById('textoNotificacion').textContent = error;
-            let toast = new bootstrap.Toast(notificacion);
-            toast.show();
+            crearNotificacion('NOTIFICACION_DANGER', 'No se han podido leer los contactos', 'ERROR');
         }
 
     function crearNotificacion(tipo, mensaje, titulo)
@@ -86,13 +82,37 @@ function crearTablaContactosCorrectamente(obj)//obj es el resultado de la funcio
         let notificacion = bootstrap.Toast.getOrCreateInstance(elementoNotificacion);//Esta instancia es para poder mostrarla
         
         //editar los datos de la notificacion
-        iconoNotificacion.className = ''; //limpia el icono
-        iconoNotificacion.classList.add('bi', 'bi-check2-square');//Este icono es de bootstrap
         mensajeNotificacion.textContent = mensaje;
         tituloNotificacion.textContent = titulo;
-        elementoNotificacion.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-verde-oscuro');
-        //se le esta poniendo un color a la notificacion, el color depende del tipo de notificacion de css.html
 
+        switch(tipo)
+        {
+            case NOTIFICACION_OK:
+            iconoNotificacion.className = ''; //limpia el icono
+            iconoNotificacion.classList.add('bi', 'bi-check2-square');//Este icono es de bootstrap
+            
+            elementoNotificacion.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-verde-oscuro');
+            //se le esta poniendo un color a la notificacion, el color depende del tipo de notificacion de css.html
+            break;
+
+            case NOTIFICACION_DANGER:
+            iconoNotificacion.className = ''; //limpia el icono
+            iconoNotificacion.classList.add('bi', 'bi-bug');//Este icono es de bootstrap
+            
+            elementoNotificacion.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-rojo-oscuro');
+            //se le esta poniendo un color a la notificacion, el color depende del tipo de notificacion de css.html
+            break;
+
+            case NOTIFICACION_WARNING:
+            iconoNotificacion.className = ''; //limpia el icono
+            iconoNotificacion.classList.add('bi', 'bi-exclamation-square');//Este icono es de bootstrap
+            
+            elementoNotificacion.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-amarillo-oscuro');
+            //se le esta poniendo un color a la notificacion, el color depende del tipo de notificacion de css.html
+            break;
+        }
+
+      
 
         //Mostrar notificacion
         notificacion.show();
