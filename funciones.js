@@ -10,6 +10,7 @@ function obtenerDatosHTML(nombre)
 
 function obtenerContactos()
 {
+    /* Busca el Id y extrae los datos de la hoja de calculo */
    let hoja = SpreadsheetApp.openById('1OEspzs-dv5ybSrLY2-pCrattgY6NAJAB0cULR0hLvAc').getActiveSheet();
    let datos = hoja.getDataRange().getValues();
    return datos;

@@ -8,8 +8,12 @@ function crearTablaContactos()
         tabla.remove();//si existe la tabla la elimina, para que no se duplique
     }
     //Hace la tabla hasta que la funcion obtenerContactos termine
-    google.script.run.withSuccessHandler( 
-        function(obj)//obj es el resultado de la funcion obtenerContactos
+    google.script.run.withSuccessHandler(crearTablaContactosCorrectamente).obtenerContactos()
+    .withfailureHandler(creatTablaContactosError)//En caso de no obtener los contactos, se va hasta la funcion creatTablaContactosError
+    .obtenerContactos();
+}  
+
+function crearTablaContactosCorrectamente(obj)//obj es el resultado de la funcion obtenerContactos
         {
            
             //creamos la tabla
@@ -45,26 +49,7 @@ function crearTablaContactos()
                     tablaBody.appendChild(fila);//agregamos la fila a la tabla pero en la pagina web
             }
 
-            //Array.from(obj).forEach((filaActual,i) =>
-            //{
-            //    let fila = document.createElement('tr');
-            //    filaActual.forEach(celdaActual =>
-            //    {
-            //        let celda = document.createElement('td');
-            //        celda.textContent = celdaActual;
-            //        fila.appendChild(celda);
-            //    });
-            //    if(i==0)
-            //    {    
-            //        tablaHeader.appendChild(fila);
-            //        tabla.appendChild(tablaHeader);
-            //    }
-            //    else
-            //    {
-            //        tablaBody.appendChild(fila);
-            //    }    
-            //});
-            
+        
             
             //agregamos clases a la cabecera
             tablaHeader.classList.add('table-dark');
@@ -74,7 +59,43 @@ function crearTablaContactos()
             tabla.classList.add('table', 'table-striped', 'border', 'border-3');
             //agrega,la tabla a la pagina
             document.getElementById('divContactos').appendChild(tabla);//divContactos es el id del div que esta en Main.html
+        
+        //Mostrar una notificacion de exito
+        crearNotificacion('1', 'Se han cargado los contactos correctamente', 'Todo en orden');
         }
-    ).obtenerContactos();
-}    
+
+        function creatTablaContactosError(error)
+        {
+            //Muestra una notificacion de error
+            let notificacion = document.getElementById('notificacion');
+            notificacion.classList.add('bg-danger');
+            document.getElementById('iconoNotificacion').classList.add('bi', 'bi-exclamation-triangle');
+            document.getElementById('tituloNotificacion').textContent = 'Error';
+            document.getElementById('textoNotificacion').textContent = error;
+            let toast = new bootstrap.Toast(notificacion);
+            toast.show();
+        }
+
+    function crearNotificacion(tipo, mensaje, titulo)
+    {
+        //obtener datos de la notificacion
+        let mensajeNotificacion = document.getElementById('mensajeNotificacion');//lo mostrara en el div dentro del main linea 24
+        let tituloNotificacion = document.getElementById('tituloNotificacion');// lo mismo, linea 20 del main
+        let elementoNotificacion = document.getElementById('notificacion');//Esto nos guarda la notificacion en una variable, main linea 16
+        let iconoNotificacion = document.getElementById('iconoNotificacion');//Main linea 19
+        let notificacion = bootstrap.Toast.getOrCreateInstance(elementoNotificacion);//Esta instancia es para poder mostrarla
+        
+        //editar los datos de la notificacion
+        iconoNotificacion.className = ''; //limpia el icono
+        iconoNotificacion.classList.add('bi', 'bi-check2-square');//Este icono es de bootstrap
+        mensajeNotificacion.textContent = mensaje;
+        tituloNotificacion.textContent = titulo;
+        elementoNotificacion.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-verde-oscuro');
+        //se le esta poniendo un color a la notificacion, el color depende del tipo de notificacion de css.html
+
+
+        //Mostrar notificacion
+        notificacion.show();
+
+    }
 </script>
