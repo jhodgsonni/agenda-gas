@@ -1,19 +1,18 @@
 <script>
 
-    const NOTIFICACION_OK = 1;
-    const NOTIFICACION_DANGER = 2;
-    const NOTIFICACION_WARNING = 3;
-
     function crearTablaContactos()
     {
-    let tabla = document.getElementById('tablaContactos');//obtiene la tabla si ya existe
-    if(tabla)
-        {
-            tabla.remove();//si existe la tabla la elimina, para que no se duplique
-        }
+        eliminarTablaContactos();//borra la tabla si ya existe
+
+        //creando el loader
+        crearLoader('divContactos');//crea el loader en el divContactos
+
+
+
         //Hace la tabla hasta que la funcion obtenerContactos termine
-        google.script.run.withSuccessHandler(crearTablaContactosCorrectamente).obtenerContactos()
-        .withfailureHandler(creatTablaContactosError)//En caso de no obtener los contactos, se va hasta la funcion creatTablaContactosError
+        google.script.run
+        .withSuccessHandler(crearTablaContactosCorrectamente)
+        .withFailureHandler(creatTablaContactosError)//En caso de no obtener los contactos, se va hasta la funcion creatTablaContactosError
         .obtenerContactos();
     }  
 
@@ -63,12 +62,18 @@
         
             //Mostrar una notificacion de exito
             crearNotificacionOk('Se han cargado los contactos correctamente', 'Todo en orden');
+
+            //Elimina el loader
+            eliminarLoader();
         }
 
-    function creatTablaContactosError(error)
+    function creatTablaContactosError()
     {
         //Muestra una notificacion de error
         crearNotificacionError('No se han podido leer los contactos', 'ERROR');
+
+         //Elimina el loader
+         eliminarLoader();
     }
 
     function crearNotificacion(mensaje, titulo)
@@ -79,23 +84,23 @@
         bootstrap.Toast.getOrCreateInstance(elementoNotificacion).show();//Esta instancia es para poder mostrarla
     }
 
-    function crearNotificacionOk()
+    function crearNotificacionOk(mensaje, titulo)
     {
-        crearColorNotificacion(mensaje,titulo);
+        crearNotificacion(mensaje,titulo);
         crearIconoNotificacionOk();
         crearColorNotificacion('--color-verde-oscuro');
     }
 
-    function crearNotificacionError()
+    function crearNotificacionError(mensaje, titulo)
     {
-        crearColorNotificacion(mensaje,titulo);
+        crearNotificacion(mensaje,titulo);
         crearIconoNotificacionError();
         crearColorNotificacion('--color-rojo-oscuro');
     }
 
-    function crearNotificacionWarning()
+    function crearNotificacionWarning(mensaje, titulo)
     {
-        crearColorNotificacion(mensaje,titulo);
+        crearNotificacion(mensaje,titulo);
         crearIconoNotificacionWarning();
         crearColorNotificacion('--color-amarillo-oscuro');
     }
@@ -121,8 +126,50 @@
     function crearColorNotificacion(color)
     {
         let elementoNotificacion = document.getElementById('notificacion');//Esto nos guarda la notificacion en una variable, main linea 16
-        elementoNotificacion.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-verde-oscuro');
+        elementoNotificacion.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue(color);
         //se le esta poniendo un color a la notificacion, el color depende del tipo de notificacion de css.html      
     }
 
+    function crearLoader(elementoPadre)
+    {
+        eliminarLoader();
+        let loader = document.createElement('div');//nos guardamos el loader en una variable
+        loader.id = 'loader';
+        loader.appendChild(document.createElement('div'));
+        loader.appendChild(document.createElement('div'));
+        loader.appendChild(document.createElement('div'));
+        loader.appendChild(document.createElement('div'));
+        loader.classList.add('lds-ellipsis');
+        document.getElementById(elementoPadre).appendChild(loader);
+    }
+
+    function crearLoaderPuntos(elementoPadre)
+    {
+        let loader = crearLoader(elementoPadre);
+        loader.classList.add('lds-ellipsis');
+    }
+
+    function crearLoaderAnillo(elementoPadre)
+    {
+        let loader = crearLoader(elementoPadre);
+        loader.classList.add('lds-ring');
+    }
+
+    function eliminarLoader()
+    {
+        let loader = document.getElementById('loader');
+        if(loader)
+        {
+            loader.remove();
+        }
+    }
+
+    function eliminarTablaContactos()
+    {
+        let tabla = document.getElementById('tablaContactos');
+        if(tabla)
+        {
+            tabla.remove();
+        }
+    }
 </script>
