@@ -1,187 +1,176 @@
 <script>
-
-    function insertarContacto()
-    {
+    function insertarContacto() {
         //obtener los datos del formulario
-        let nombre = document.getElementById('nombre').value;//nombre hace referencia al id del input del main.html
+        let nombre = document.getElementById('nombre').value; //nombre hace referencia al id del input del main.html
         let correo = document.getElementById('correo').value;
+
+        //cerrar Modal
+        bootstrap.Modal.getInstance(document.getElementById('crearContactoModal')).hide();
 
         //eliminar Tabla
         eliminarTablaContactos();
 
         //Crear lOADER
-        crearLoaderPuntos('divContactos');
+        crearLoaderAnillo('divContactos');
 
         google.script.run
-        .withSuccessHandler(contactoInsertadoCorrectamente)
-        .withFailureHandler(contactoInsertadoError)
-        .insertarContacto(nombre, correo);
-        
-        /*if(imagen) contacto.imagen = guardarImagen(imagen);*/
-        /*HOJA.appendRow([contacto.nombre, contacto.apellidos, contacto.correo, contacto.telf, contacto.imagen]);*/
+            .withSuccessHandler(contactoInsertadoCorrectamente)
+            .withFailureHandler(contactoInsertadoError)
+            .insertarContacto(nombre, correo);
+
     }
 
-    function contactoInsertadoCorrectamente()
-    {
-       //eliminamos los datos de los inputs
-       document.getElementById('nombre').value = '';
-       document.getElementById('correo').value = '';
+    function contactoInsertadoCorrectamente() {
+        //eliminamos los datos de los inputs
+        document.getElementById('nombre').value = '';
+        document.getElementById('correo').value = '';
 
-       //mostrar notificacion
-       crearNotificacionOk('Se ha insertado el contacto correctamente', 'Todo en orden');
+        //mostrar notificacion
+        crearNotificacionOk('Se ha insertado el contacto correctamente', 'Todo en orden');
 
-       //eliminar loader
-         eliminarLoader();
+        //eliminar loader
+        eliminarLoader();
 
-         //mostramos la tabla de contactos
-         crearTablaContactos();
-    }  
+        //mostramos la tabla de contactos
+        crearTablaContactos();
+    }
 
-    function contactoInsertadoError()
-    {
+    function contactoInsertadoError() {
         crearNotificacionError('No se ha podido insertar el contacto', 'ERROR');
-        
+
         //eliminar loader
         eliminarLoader();
 
 
-         //mostramos la tabla de contactos
-         crearTablaContactos();
+        //mostramos la tabla de contactos
+        crearTablaContactos();
     }
 
-    function crearTablaContactos()
-    {
+    function crearTablaContactos() {
         //eliminar Tabla
         eliminarTablaContactos();
 
         //Crear lOADER
-        crearLoaderPuntos('divContactos');
+        crearLoaderAnillo('divContactos');
 
         google.script.run
-        .withSuccessHandler(crearTablaContactosCorrectamente)
-        .withFailureHandler(crearTablaContactosError)
-        .obtenerContactos();
+            .withSuccessHandler(crearTablaContactosCorrectamente)
+            .withFailureHandler(crearTablaContactosError)
+            .obtenerContactos();
 
     }
 
-    function crearTablaContactosCorrectamente(obj)//obj es el resultado de la funcion obtenerContactos
+    function crearTablaContactosCorrectamente(obj) //obj es el resultado de la funcion obtenerContactos
+    {
+        //creamos la tabla
+        let tabla = document.createElement('table');
+        tabla.id = 'tablaContactos';
+
+        let tablaHeader = document.createElement('thead');
+        let tablaBody = document.createElement('tbody');
+
+        //Empezamos creando el header de la tabla
+        let primeraFila = document.createElement('tr'); //creamos una fila
+
+        for (let i = 0; i < obj[0].length; i++) //saca los elementos de la cabezera
         {
-            //creamos la tabla
-            tabla = document.createElement('table');
-            tabla.id = 'tablaContactos';
+            let celda = document.createElement('td'); //creamos una celda por cada elemento de la matriz de excel
+            celda.textContent = obj[0][i];
+            primeraFila.appendChild(celda); //agregamos la celda a la fila pero en la pagina web
+        }
+        //si es la primera fila, la agregamos a la cabecera
+        tablaHeader.appendChild(primeraFila);
+        tabla.appendChild(tablaHeader);
 
-            let tablaHeader = document.createElement('thead');
-            let tablaBody = document.createElement('tbody');
-
-            //Empezamos creando el header de la tabla
-            let primeraFila = document.createElement('tr');//creamos una fila
-
-            for(let i=0; i<obj[0].length; i++)//saca los elementos de la cabezera
-            {
-                let celda = document.createElement('td');//creamos una celda por cada elemento de la matriz de excel
-                    celda.textContent = obj[0][i];
-                    primeraFila.appendChild(celda);//agregamos la celda a la fila pero en la pagina web
+        //Aqui empezamos a crear el cuerpo de la tabla
+        for (let i = 1; i < obj.length; i++) {
+            let fila = document.createElement('tr'); //creamos una fila
+            for (let j = 0; j < obj[i].length; j++) {
+                let celda = document.createElement('td'); //creamos una celda por cada elemento de la matriz de excel
+                celda.textContent = obj[i][j];
+                fila.appendChild(celda); //agregamos la celda a la fila pero en la pagina web
             }
-            //si es la primera fila, la agregamos a la cabecera
-            tablaHeader.appendChild(primeraFila);
-            tabla.appendChild(tablaHeader);
-
-            //Aqui empezamos a crear el cuerpo de la tabla
-            for(let i=1; i< obj.length; i++)
-            {
-                let fila = document.createElement('tr');//creamos una fila
-                for(let j=0; j< obj[i].length; j++)
-                {
-                    let celda = document.createElement('td');//creamos una celda por cada elemento de la matriz de excel
-                    celda.textContent = obj[i][j];
-                    fila.appendChild(celda);//agregamos la celda a la fila pero en la pagina web
-                }
-                    tablaBody.appendChild(fila);//agregamos la fila a la tabla pero en la pagina web
-            }
-
-            //agregamos clases a la cabecera
-            tablaHeader.classList.add('table-dark');
-            //agregamos el cuerpo de la tabla
-            tabla.appendChild(tablaBody);
-            //agregamos clases a la tabla
-            tabla.classList.add('table', 'table-striped', 'border', 'border-4', 'border-dark');
-            //agrega,la tabla a la pagina
-            document.getElementById('divContactos').appendChild(tabla);//divContactos es el id del div que esta en Main.html
-        
-            //Mostrar una notificacion de exito
-            crearNotificacionOk('Se han cargado los contactos correctamente', 'Todo en orden');
-
-            //Elimina el loader
-            eliminarLoader();
+            tablaBody.appendChild(fila); //agregamos la fila a la tabla pero en la pagina web
         }
 
-    function crearTablaContactosError()
-    {
+        //agregamos clases a la cabecera
+        tablaHeader.classList.add('table-dark');
+        //agregamos el cuerpo de la tabla
+        tabla.appendChild(tablaBody);
+        //agregamos clases a la tabla
+        tabla.classList.add('table', 'table-striped', 'border', 'border-4', 'border-dark');
+        //agrega,la tabla a la pagina
+        document.getElementById('divContactos').appendChild(
+            tabla); //divContactos es el id del div que esta en Main.html
+
+        //Mostrar una notificacion de exito
+        crearNotificacionOk('Se han cargado los contactos correctamente', 'Todo en orden');
+
+        //Elimina el loader
+        eliminarLoader();
+    }
+
+    function crearTablaContactosError() {
         //Muestra una notificacion de error
         crearNotificacionError('No se han podido leer los contactos', 'ERROR');
 
-         //Elimina el loader
-         eliminarLoader();
+        //Elimina el loader
+        eliminarLoader();
     }
 
-    function crearNotificacion(mensaje, titulo)
-    {
+    function crearNotificacion(mensaje, titulo) {
         document.getElementById('mensajeNotificacion').textContent = mensaje;
         document.getElementById('tituloNotificacion').textContent = titulo;
-        let elementoNotificacion = document.getElementById('notificacion');//Esto nos guarda la notificacion en una variable, main linea 16
-        bootstrap.Toast.getOrCreateInstance(elementoNotificacion).show();//Esta instancia es para poder mostrarla
+        let elementoNotificacion = document.getElementById(
+            'notificacion'); //Esto nos guarda la notificacion en una variable, main linea 16
+        bootstrap.Toast.getOrCreateInstance(elementoNotificacion).show(); //Esta instancia es para poder mostrarla
     }
 
-    function crearNotificacionOk(mensaje, titulo)
-    {
-        crearNotificacion(mensaje,titulo);
+    function crearNotificacionOk(mensaje, titulo) {
+        crearNotificacion(mensaje, titulo);
         crearIconoNotificacionOk();
         crearColorNotificacion('--color-verde-oscuro');
     }
 
-    function crearNotificacionError(mensaje, titulo)
-    {
-        crearNotificacion(mensaje,titulo);
+    function crearNotificacionError(mensaje, titulo) {
+        crearNotificacion(mensaje, titulo);
         crearIconoNotificacionError();
         crearColorNotificacion('--color-rojo-oscuro');
     }
 
-    function crearNotificacionWarning(mensaje, titulo)
-    {
-        crearNotificacion(mensaje,titulo);
+    function crearNotificacionWarning(mensaje, titulo) {
+        crearNotificacion(mensaje, titulo);
         crearIconoNotificacionWarning();
         crearColorNotificacion('--color-amarillo-oscuro');
     }
 
-    function crearIconoNotificacionOk()
-    {
+    function crearIconoNotificacionOk() {
         document.getElementById('iconoNotificacion').className = ''; //limpia el icono
-        document.getElementById('iconoNotificacion').classList.add('bi', 'bi-check2-square');//Este icono es de bootstrap
+        document.getElementById('iconoNotificacion').classList.add('bi',
+            'bi-check2-square'); //Este icono es de bootstrap
     }
 
-    function crearIconoNotificacionError()
-    {
+    function crearIconoNotificacionError() {
         document.getElementById('iconoNotificacion').className = ''; //limpia el icono
-        document.getElementById('iconoNotificacion').classList.add('bi', 'bi-bug');//Este icono es de bootstrap
+        document.getElementById('iconoNotificacion').classList.add('bi', 'bi-bug'); //Este icono es de bootstrap
     }
 
-    function crearIconoNotificacionWarning()
-    {
+    function crearIconoNotificacionWarning() {
         document.getElementById('iconoNotificacion').className = ''; //limpia el icono
-        document.getElementById('iconoNotificacion').classList.add('bi', 'bi-exclamation-square');//Este icono es de bootstrap
+        document.getElementById('iconoNotificacion').classList.add('bi',
+            'bi-exclamation-square'); //Este icono es de bootstrap
     }
 
-    function crearColorNotificacion(color)
-    {
-        let elementoNotificacion = document.getElementById('notificacion');//Esto nos guarda la notificacion en una variable, main linea 16
+    function crearColorNotificacion(color) {
+        let elementoNotificacion = document.getElementById(
+            'notificacion'); //Esto nos guarda la notificacion en una variable, main linea 16
         elementoNotificacion.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue(color);
         //se le esta poniendo un color a la notificacion, el color depende del tipo de notificacion de css.html      
     }
 
-    function crearLoader(elementoPadre)
-    {
+    function crearLoader(elementoPadre) {
         eliminarLoader();
-        let loader = document.createElement('div');//nos guardamos el loader en una variable
+        let loader = document.createElement('div'); //nos guardamos el loader en una variable
         loader.id = 'loader';
         loader.appendChild(document.createElement('div'));
         loader.appendChild(document.createElement('div'));
@@ -189,34 +178,29 @@
         loader.appendChild(document.createElement('div'));
         loader.classList.add('lds-ellipsis');
         document.getElementById(elementoPadre).appendChild(loader);
+        return loader; //Asegurate de devolver el loader
     }
 
-    function crearLoaderPuntos(elementoPadre)
-    {
+    function crearLoaderPuntos(elementoPadre) {
         let loader = crearLoader(elementoPadre);
         loader.classList.add('lds-ellipsis');
     }
 
-    function crearLoaderAnillo(elementoPadre)
-    {
+    function crearLoaderAnillo(elementoPadre) {
         let loader = crearLoader(elementoPadre);
         loader.classList.add('lds-ring');
     }
 
-    function eliminarLoader()
-    {
+    function eliminarLoader() {
         let loader = document.getElementById('loader');
-        if(loader)
-        {
+        if (loader) {
             loader.remove();
         }
     }
 
-    function eliminarTablaContactos()
-    {
+    function eliminarTablaContactos() {
         let tabla = document.getElementById('tablaContactos');
-        if(tabla)
-        {
+        if (tabla) {
             tabla.remove();
         }
     }
