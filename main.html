@@ -1,14 +1,28 @@
 <main>
 
-    <!-- Botones -->
-    <div class="d-flex justify-content-center mb-4"> <!-- margin boton (mb) -->
-        <button class="btn btn-success m-3" onclick="crearTablaContactos()">Mostrar Contactos</button>
+     <!-- Formulario de contacto -->
+    <div class="d-flex justify-content-center my-3"> <!-- margin boton 3 y margin top 3 (my-3) -->
+        <form onsubmit="insertarContacto()" method="dialog" id="formulario">
+            <!-- action="https://script.google.com/macros/s/AKfycbwT5WB03wbqRZEsUTudSBrgvIGk-GLtDXrwnrXBS_U/dev" -->
+            <div class="mb-3">
+                <label for="nombre" class="form label">Introduce el nombre del contacto:</label>
+                <input type="text" class="form-control" name="nombre" id="nombre">
+            </div>
+
+            <div class="mb-3">
+                <label for="correo" class="form label">Introduce el correo del contacto:</label>
+                <input type="text" class="form-control" name="correo" id="correo">
+            </div>
+
+            <!-- Botones -->
+            <button type="button" class="btn btn-success m-3" onclick="crearTablaContactos()">Mostrar contactos</button>
+            <button type="submit" class="btn btn-primary">Crear contacto</button>
+        </form> 
     </div>
 
     <!-- Tabla de contactos -->
      <div class="container col-12 col-lg-6 d-flex justify-content-center" id="divContactos"> <!-- w-50 (ancho 50%) -->
         
-
     </div>
 
     <!-- Notificaciones -->

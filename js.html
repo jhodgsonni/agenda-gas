@@ -1,20 +1,68 @@
 <script>
 
+    function insertarContacto()
+    {
+        //obtener los datos del formulario
+        let nombre = document.getElementById('nombre').value;//nombre hace referencia al id del input del main.html
+        let correo = document.getElementById('correo').value;
+
+        //eliminar Tabla
+        eliminarTablaContactos();
+
+        //Crear lOADER
+        crearLoaderPuntos('divContactos');
+
+        google.script.run
+        .withSuccessHandler(contactoInsertadoCorrectamente)
+        .withFailureHandler(contactoInsertadoError)
+        .insertarContacto(nombre, correo);
+        
+        /*if(imagen) contacto.imagen = guardarImagen(imagen);*/
+        /*HOJA.appendRow([contacto.nombre, contacto.apellidos, contacto.correo, contacto.telf, contacto.imagen]);*/
+    }
+
+    function contactoInsertadoCorrectamente()
+    {
+       //eliminamos los datos de los inputs
+       document.getElementById('nombre').value = '';
+       document.getElementById('correo').value = '';
+
+       //mostrar notificacion
+       crearNotificacionOk('Se ha insertado el contacto correctamente', 'Todo en orden');
+
+       //eliminar loader
+         eliminarLoader();
+
+         //mostramos la tabla de contactos
+         crearTablaContactos();
+    }  
+
+    function contactoInsertadoError()
+    {
+        crearNotificacionError('No se ha podido insertar el contacto', 'ERROR');
+        
+        //eliminar loader
+        eliminarLoader();
+
+
+         //mostramos la tabla de contactos
+         crearTablaContactos();
+    }
+
     function crearTablaContactos()
     {
-        eliminarTablaContactos();//borra la tabla si ya existe
+        //eliminar Tabla
+        eliminarTablaContactos();
 
-        //creando el loader
-        crearLoader('divContactos');//crea el loader en el divContactos
+        //Crear lOADER
+        crearLoaderPuntos('divContactos');
 
-
-
-        //Hace la tabla hasta que la funcion obtenerContactos termine
         google.script.run
         .withSuccessHandler(crearTablaContactosCorrectamente)
-        .withFailureHandler(creatTablaContactosError)//En caso de no obtener los contactos, se va hasta la funcion creatTablaContactosError
+        .withFailureHandler(crearTablaContactosError)
         .obtenerContactos();
-    }  
+
+    }
 
     function crearTablaContactosCorrectamente(obj)//obj es el resultado de la funcion obtenerContactos
         {
@@ -67,7 +115,7 @@
             eliminarLoader();
         }
 
-    function creatTablaContactosError()
+    function crearTablaContactosError()
     {
         //Muestra una notificacion de error
         crearNotificacionError('No se han podido leer los contactos', 'ERROR');
