@@ -2,7 +2,9 @@
     function insertarContacto() {
         //obtener los datos del formulario
         let nombre = document.getElementById('nombre').value; //nombre hace referencia al id del input del main.html
+        let apellidos = document.getElementById('apellidos').value; //nombre hace referencia al id del input del main.html
         let correo = document.getElementById('correo').value;
+        let telf = document.getElementById('telf').value;
 
         //cerrar Modal
         bootstrap.Modal.getInstance(document.getElementById('crearContactoModal')).hide();
@@ -16,7 +18,7 @@
         google.script.run
             .withSuccessHandler(contactoInsertadoCorrectamente)
             .withFailureHandler(contactoInsertadoError)
-            .insertarContacto(nombre, correo);
+            .insertarContacto(nombre, apellidos, correo, telf);
 
     }
 
